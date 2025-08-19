@@ -82,7 +82,6 @@ export function RoleplayMode({ language }: RoleplayModeProps) {
 
       setIsLoading(true);
 
-      
       const res = await fetch(import.meta.env.VITE_BASE_URL + "/roleplay", {
         method: "POST",
         body: formData,
@@ -90,13 +89,17 @@ export function RoleplayMode({ language }: RoleplayModeProps) {
 
       if (!res.ok) throw new Error("Failed to fetch audio");
 
-      const audioBlob = await res.blob();
+      const arrayBuffer = await res.arrayBuffer();
+      const audioBlob = new Blob([arrayBuffer], { type: "audio/mpeg" });
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
 
       setIsSpeaking(true);
-      await audio.play();
+      audio.play().catch((err) => {
+        console.error("Playback failed:", err);
+        setIsSpeaking(false);
+      });
       audio.onended = () => setIsSpeaking(false);
       setIsLoading(false);
     }
