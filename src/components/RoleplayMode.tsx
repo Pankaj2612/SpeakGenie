@@ -83,7 +83,7 @@ export function RoleplayMode({ language }: RoleplayModeProps) {
       setIsLoading(true);
 
       // 🚀 Do fetch but don’t convert to arrayBuffer
-      const res = await fetch(import.meta.env.BASE_URL + "/roleplay", {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + "/roleplay", {
         method: "POST",
         body: formData,
       });

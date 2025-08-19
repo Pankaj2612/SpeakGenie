@@ -33,7 +33,7 @@ export function VoiceTutor({ language }: VoiceTutorProps) {
       setIsLoading(true);
 
       // 🚀 Do fetch but don’t convert to arrayBuffer
-      const res = await fetch(import.meta.env.BASE_URL + "/stt", {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + "/stt", {
         method: "POST",
         body: formData,
       });
