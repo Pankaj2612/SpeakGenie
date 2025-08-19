@@ -39,10 +39,8 @@ export function VoiceTutor({ language }: VoiceTutorProps) {
 
       if (!res.ok) throw new Error("Failed to fetch audio");
 
-      const arrayBuffer = await res.arrayBuffer();
-      const audioBlob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
+      const { audio: base64Audio } = await res.json();
+      const audio = new Audio(`data:audio/mpeg;base64,${base64Audio}`);
       audioRef.current = audio;
 
       setIsSpeaking(true);
