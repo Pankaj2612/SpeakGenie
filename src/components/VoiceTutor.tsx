@@ -32,45 +32,19 @@ export function VoiceTutor({ language }: VoiceTutorProps) {
 
       setIsLoading(true);
 
-      // 🚀 Do fetch but don’t convert to arrayBuffer
       const res = await fetch(import.meta.env.VITE_BASE_URL + "/stt", {
         method: "POST",
         body: formData,
       });
 
-      // 🎧 Setup MediaSource
-      const mediaSource = new MediaSource();
-      const audio = new Audio(URL.createObjectURL(mediaSource));
+      if (!res.ok) throw new Error("Failed to fetch audio");
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
 
       setIsSpeaking(true);
-
-      mediaSource.addEventListener("sourceopen", async () => {
-        const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
-        const reader = res.body!.getReader();
-
-        const pump = async () => {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              mediaSource.endOfStream();
-              break;
-            }
-            if (value) {
-              // Wait if buffer is updating (important for streaming)
-              if (sourceBuffer.updating) {
-                await new Promise((r) =>
-                  sourceBuffer.addEventListener("updateend", r, { once: true })
-                );
-              }
-              sourceBuffer.appendBuffer(value);
-            }
-          }
-        };
-
-        pump();
-      });
-
       audio.play();
       audio.onended = () => setIsSpeaking(false);
       setIsLoading(false);
