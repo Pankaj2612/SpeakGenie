@@ -45,7 +45,7 @@ export function VoiceTutor({ language }: VoiceTutorProps) {
       audioRef.current = audio;
 
       setIsSpeaking(true);
-      audio.play();
+      await audio.play();
       audio.onended = () => setIsSpeaking(false);
       setIsLoading(false);
     }
